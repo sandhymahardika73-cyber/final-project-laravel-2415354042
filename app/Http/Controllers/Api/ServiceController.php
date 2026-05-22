@@ -31,23 +31,29 @@ class ServiceController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function store(Request $request)
-    {
-        // Siklus 1: Belum ditambahkan $request->validate()
-        
-        $service = Service::create([
-            'name'        => $request->name,
-            'description' => $request->description,
-            'price'       => $request->price,
-            'status'      => $request->status ?? 'active',
-        ]);
+   public function store(Request $request)
+{
+    // Tambahan Validasi di Siklus 2
+    $request->validate([
+        'name'        => 'required|string|max:255',
+        'description' => 'nullable|string',
+        'price'       => 'required|numeric|min:0',
+        'status'      => 'nullable|in:active,inactive',
+    ]);
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Service Berhasil Disimpan!',
-            'data'    => $service
-        ], 201);
-    }
+    $service = Service::create([
+        'name'        => $request->name,
+        'description' => $request->description,
+        'price'       => $request->price,
+        'status'      => $request->status ?? 'active',
+    ]);
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Service Berhasil Disimpan!',
+        'data'    => $service
+    ], 201);
+}
 
     /**
      * show
@@ -71,23 +77,30 @@ class ServiceController extends Controller
      * @param  \App\Models\Service  $service
      * @return \Illuminate\Http\JsonResponse
      */
-    public function update(Request $request, Service $service)
-    {
-        // Siklus 1: Belum ditambahkan $request->validate()
+    
+public function update(Request $request, Service $service)
+{
+    // Tambahan Validasi di Siklus 2
+    $request->validate([
+        'name'        => 'required|string|max:255',
+        'description' => 'nullable|string',
+        'price'       => 'required|numeric|min:0',
+        'status'      => 'required|in:active,inactive',
+    ]);
 
-        $service->update([
-            'name'        => $request->name,
-            'description' => $request->description,
-            'price'       => $request->price,
-            'status'      => $request->status,
-        ]);
+    $service->update([
+        'name'        => $request->name,
+        'description' => $request->description,
+        'price'       => $request->price,
+        'status'      => $request->status,
+    ]);
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Service Berhasil Diupdate!',
-            'data'    => $service
-        ], 200);
-    }
+    return response()->json([
+        'success' => true,
+        'message' => 'Service Berhasil Diupdate!',
+        'data'    => $service
+      ], 200);
+  }
 
     /**
      * destroy
